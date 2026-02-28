@@ -4,7 +4,7 @@ I love open-source <3
 
 > Dependency security & health checker for Node.js projects — fast, free
 
-[![npm version](https://img.shields.io/npm/v/@chefharun/opencheck)](https://npmjs.com/package/@chefharun/opencheck)
+[![npm version](https://img.shields.io/npm/v/@chefharun/opencheck)](https://www.npmjs.com/package/opencheck-cli)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ## Features
