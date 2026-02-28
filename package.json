@@ -1,32 +1,37 @@
 {
     "name": "@chefharun/opencheck",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Dependency security & health checker for Node.js projects",
     "main": "dist/cli.js",
     "bin": {
-      "opencheck": "./dist/cli.js"
+        "opencheck": "./dist/cli.js"
     },
     "scripts": {
-      "build": "tsc",
-      "dev": "tsx src/cli.ts",
-      "start": "node dist/cli.js"
+        "build": "tsc",
+        "dev": "tsx src/cli.ts",
+        "start": "node dist/cli.js"
     },
     "files": [
-      "dist/",
-      "README.md"
+        "dist/",
+        "README.md"
     ],
-    "keywords": ["dependencies", "security", "audit", "cli"],
+    "keywords": [
+        "dependencies",
+        "security",
+        "audit",
+        "cli"
+    ],
     "license": "MIT",
     "devDependencies": {
-      "ts-node": "^10.9.2",
-      "tsx": "^4.21.0",
-      "@types/node": "^20.0.0",
-      "typescript": "^5.0.0"
+        "ts-node": "^10.9.2",
+        "tsx": "^4.21.0",
+        "@types/node": "^20.0.0",
+        "typescript": "^5.0.0"
     },
     "dependencies": {
-      "chalk": "^4.1.2",
-      "cli-table3": "^0.6.5",
-      "commander": "^11.1.0",
-      "ora": "^5.4.1"
+        "chalk": "^4.1.2",
+        "cli-table3": "^0.6.5",
+        "commander": "^11.1.0",
+        "ora": "^5.4.1"
     }
-  }
+}
