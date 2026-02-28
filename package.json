@@ -23,15 +23,18 @@
     ],
     "license": "MIT",
     "devDependencies": {
+        "@types/inquirer": "^8.2.12",
+        "@types/node": "^20.19.35",
+        "@types/react": "^19.2.14",
         "ts-node": "^10.9.2",
         "tsx": "^4.21.0",
-        "@types/node": "^20.0.0",
         "typescript": "^5.0.0"
     },
     "dependencies": {
         "chalk": "^4.1.2",
         "cli-table3": "^0.6.5",
         "commander": "^11.1.0",
+        "inquirer": "^8.2.7",
         "ora": "^5.4.1"
     }
 }
