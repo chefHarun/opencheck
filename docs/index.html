@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenCheck — Dependency Health Scanner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #080808;
+      --white: #f5f5f0;
+      --gray-1: #111;
+      --gray-2: #1e1e1e;
+      --gray-3: #2e2e2e;
+      --gray-4: #555;
+      --gray-5: #888;
+      --gray-6: #bbb;
+      --red: #ff3b3b;
+      --yellow: #f5c800;
+      --green: #00d26a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 3rem;
+      border-bottom: 1px solid var(--gray-2);
+      background: rgba(8,8,8,0.92);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: var(--white);
+    }
+
+    .nav-logo-box {
+      width: 30px; height: 30px;
+      border: 1.5px solid var(--white);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+
+    .nav-logo-text {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--gray-5);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--white); }
+
+    .nav-npm {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--gray-3);
+      border-radius: 999px;
+      color: var(--gray-6);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-npm:hover {
+      border-color: var(--white);
+      color: var(--white);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 10rem 3rem 6rem;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      color: var(--gray-5);
+      border: 1px solid var(--gray-3);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero-badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.6s ease 0.1s both;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--gray-5);
+    }
+
+    .hero-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--gray-5);
+      line-height: 1.8;
+      max-width: 520px;
+      margin: 0 auto 3rem;
+      animation: fadeUp 0.6s ease 0.2s both;
+    }
+
+    /* ── UPLOAD ZONE ── */
+    #upload-section {
+      max-width: 680px;
+      margin: 0 auto;
+      animation: fadeUp 0.6s ease 0.3s both;
+    }
+
+    .drop-zone {
+      border: 1.5px dashed var(--gray-3);
+      border-radius: 16px;
+      padding: 3.5rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+      background: var(--gray-1);
+    }
+
+    .drop-zone:hover,
+    .drop-zone.dragover {
+      border-color: var(--white);
+      background: var(--gray-2);
+    }
+
+    .drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .drop-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .drop-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .drop-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--gray-5);
+    }
+
+    .drop-sub span {
+      color: var(--white);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.25rem 0;
+      color: var(--gray-4);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--gray-3);
+    }
+
+    .paste-area {
+      width: 100%;
+      background: var(--gray-1);
+      border: 1.5px solid var(--gray-3);
+      border-radius: 12px;
+      color: var(--white);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      padding: 1rem 1.25rem;
+      resize: vertical;
+      min-height: 120px;
+      outline: none;
+      transition: border-color 0.2s;
+      line-height: 1.6;
+    }
+
+    .paste-area:focus { border-color: var(--gray-5); }
+    .paste-area::placeholder { color: var(--gray-4); }
+
+    .scan-btn {
+      width: 100%;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--white);
+      color: var(--black);
+      border: none;
+      border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .scan-btn:hover { background: var(--gray-6); }
+    .scan-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── PROGRESS ── */
+    #progress-section {
+      display: none;
+      max-width: 680px;
+      margin: 2rem auto 0;
+    }
+
+    .progress-bar-wrap {
+      height: 2px;
+      background: var(--gray-2);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--white);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .progress-log {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--gray-5);
+      text-align: center;
+    }
+
+    /* ── RESULTS ── */
+    #results-section {
+      display: none;
+      max-width: 1100px;
+      margin: 3rem auto;
+      padding: 0 3rem 4rem;
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .results-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .results-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn-outline {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--gray-3);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--gray-6);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--white);
+      color: var(--white);
+    }
+
+    /* Summary cards */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--gray-2);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 2.5rem;
+    }
+
+    .s-card {
+      padding: 2rem 2rem;
+      border-right: 1px solid var(--gray-2);
+    }
+
+    .s-card:last-child { border-right: none; }
+
+    .s-card .num {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+
+    .s-card .lbl {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gray-5);
+    }
+
+    .s-card.c-total .num { color: var(--white); }
+    .s-card.c-critical .num { color: var(--red); }
+    .s-card.c-warning .num { color: var(--yellow); }
+    .s-card.c-ok .num { color: var(--green); }
+
+    /* Filter tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-tab {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--gray-3);
+      background: transparent;
+      color: var(--gray-5);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-tab.active,
+    .filter-tab:hover {
+      border-color: var(--white);
+      color: var(--white);
+      background: var(--gray-2);
+    }
+
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gray-4);
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--gray-2);
+      white-space: nowrap;
+    }
+
+    thead th:first-child { padding-left: 0; }
+
+    tbody tr {
+      border-bottom: 1px solid #111;
+      transition: background 0.15s;
+      animation: fadeUp 0.3s ease both;
+    }
+
+    tbody tr:hover { background: var(--gray-1); }
+    tbody tr:last-child { border-bottom: none; }
+
+    td {
+      padding: 0.9rem 1rem;
+      font-size: 0.85rem;
+      vertical-align: middle;
+    }
+
+    td:first-child { padding-left: 0; }
+
+    .pkg-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .dep-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.55rem;
+      padding: 0.1rem 0.4rem;
+      background: #1a0505;
+      color: var(--red);
+      border-radius: 3px;
+      border: 1px solid #2a0808;
+      letter-spacing: 0.04em;
+    }
+
+    .mono {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.76rem;
+      color: var(--gray-6);
+    }
+
+    .c-outdated { color: var(--yellow) !important; }
+    .c-ok-v { color: var(--green) !important; }
+    .c-red { color: var(--red); }
+    .c-yellow { color: var(--yellow); }
+    .c-gray { color: var(--gray-5); }
+    .c-green { color: var(--green); }
+
+    .vuln-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      padding: 0.18rem 0.45rem;
+      border-radius: 3px;
+      display: inline-block;
+      margin: 0.1rem;
+      font-weight: 500;
+    }
+
+    .v-critical { background: #200808; color: #ff6b6b; border: 1px solid #330a0a; }
+    .v-high     { background: #1f1000; color: #ffaa44; border: 1px solid #331800; }
+    .v-medium   { background: #1f1a00; color: #f5c800; border: 1px solid #332800; }
+    .v-low      { background: #08141f; color: #60a5fa; border: 1px solid #0d1e30; }
+    .v-none     { color: var(--gray-4); font-family: 'DM Mono', monospace; font-size: 0.75rem; }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      padding: 0.28rem 0.65rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .s-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .sp-critical { background: #180404; color: var(--red); }
+    .sp-critical .s-dot { background: var(--red); box-shadow: 0 0 5px var(--red); }
+    .sp-warning  { background: #181200; color: var(--yellow); }
+    .sp-warning  .s-dot { background: var(--yellow); box-shadow: 0 0 5px var(--yellow); }
+    .sp-ok       { background: #041408; color: var(--green); }
+    .sp-ok       .s-dot { background: var(--green); box-shadow: 0 0 5px var(--green); }
+
+    /* Fix panel */
+    #fix-panel {
+      display: none;
+      margin-top: 2rem;
+      background: var(--gray-1);
+      border: 1px solid var(--gray-2);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+    }
+
+    .fix-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gray-5);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .fix-cmd {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--gray-6);
+      background: var(--gray-2);
+      border-radius: 6px;
+      padding: 0.7rem 1rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .fix-cmd:hover { background: var(--gray-3); }
+
+    .fix-vuln-warn {
+      font-size: 0.6rem;
+      color: var(--red);
+      flex-shrink: 0;
+    }
+
+    .fix-all {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--gray-2);
+    }
+
+    .fix-all-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--gray-5);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--gray-2);
+      padding: 1.5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    footer a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--gray-5);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover { color: var(--white); }
+
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .footer-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--gray-4);
+      border: 1px solid var(--gray-3);
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid var(--gray-3);
+      border-top-color: var(--black);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--white);
+      color: var(--black);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.7rem 1.2rem;
+      border-radius: 8px;
+      animation: fadeUp 0.3s ease both;
+      z-index: 999;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .hero { padding: 8rem 1.5rem 4rem; }
+      #upload-section { padding: 0 1.5rem; }
+      #results-section { padding: 0 1.5rem 3rem; }
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+      .s-card:nth-child(2) { border-right: none; }
+      .s-card:nth-child(3) { border-top: 1px solid var(--gray-2); }
+      .s-card:nth-child(4) { border-top: 1px solid var(--gray-2); border-right: none; }
+      footer { padding: 1.5rem; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">
+      <div class="nav-logo-box">🔍</div>
+      <span class="nav-logo-text">OpenCheck</span>
+    </a>
+    <div class="nav-links">
+      <a href="https://github.com/chefHarun/opencheck" target="_blank">GitHub</a>
+      <a href="https://npmjs.com/package/@chefharun/opencheck" target="_blank">npm</a>
+      <a href="https://npmjs.com/package/@chefharun/opencheck" target="_blank" class="nav-npm">npm i -g @chefharun/opencheck</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      FREE · NO AI · NO TRACKING
+    </div>
+    <h1>Scan your dependencies.<br><em>Stay secure.</em></h1>
+    <p class="hero-sub">
+      Upload your package.json and instantly check for vulnerabilities,
+      outdated packages, and deprecated dependencies.
+    </p>
+  </section>
+
+  <!-- UPLOAD -->
+  <section id="upload-section">
+    <div class="drop-zone" id="drop-zone">
+      <input type="file" id="file-input" accept=".json">
+      <span class="drop-icon">📦</span>
+      <div class="drop-title">Drop your package.json here</div>
+      <div class="drop-sub">or <span>browse files</span></div>
+    </div>
+
+    <div class="or-divider">OR PASTE JSON</div>
+
+    <textarea
+      class="paste-area"
+      id="paste-area"
+      placeholder='{ "dependencies": { "lodash": "^4.17.15" }, "devDependencies": { ... } }'
+    ></textarea>
+
+    <button class="scan-btn" id="scan-btn" onclick="startScan()">
+      <span id="btn-text">Scan Dependencies</span>
+    </button>
+  </section>
+
+  <!-- PROGRESS -->
+  <section id="progress-section">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div class="progress-log" id="progress-log">Initializing...</div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results-section">
+    <div class="results-header">
+      <div class="results-title">Scan Results</div>
+      <div class="results-actions">
+        <button class="btn-outline" onclick="toggleFix()">🔧 Fix Commands</button>
+        <button class="btn-outline" onclick="downloadHTML()">⬇ Export HTML</button>
+        <button class="btn-outline" onclick="resetScan()">↩ New Scan</button>
+      </div>
+    </div>
+
+    <div class="summary-grid" id="summary-grid"></div>
+
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="filterTable('all', this)">All</button>
+      <button class="filter-tab" onclick="filterTable('critical', this)">🔴 Critical</button>
+      <button class="filter-tab" onclick="filterTable('warning', this)">🟡 Warning</button>
+      <button class="filter-tab" onclick="filterTable('ok', this)">🟢 OK</button>
+    </div>
+
+    <div class="table-container">
+      <table id="results-table">
+        <thead>
+          <tr>
+            <th>Package</th>
+            <th>Current</th>
+            <th>Latest</th>
+            <th>Last Update</th>
+            <th>Downloads / wk</th>
+            <th>Vulnerabilities</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+
+    <div id="fix-panel">
+      <div class="fix-title">🔧 Fix Commands</div>
+      <div id="fix-commands"></div>
+      <div class="fix-all" id="fix-all-section"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="https://github.com/chefHarun/opencheck" target="_blank">github.com/chefHarun/opencheck</a>
+    <div class="footer-right">
+      <a href="https://osv.dev" target="_blank">Powered by OSV.dev</a>
+      <span class="footer-badge">v0.1.0</span>
+    </div>
+  </footer>
+
+  <script>
+    let scanResults = null;
+
+    // ── Drag & Drop ──
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) readFile(file);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files[0]) readFile(e.target.files[0]);
+    });
+
+    function readFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('paste-area').value = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+
+    // ── Scan ──
+    async function startScan() {
+      const raw = document.getElementById('paste-area').value.trim();
+      if (!raw) { showToast('Please upload or paste a package.json first.'); return; }
+
+      let pkg;
+      try {
+        pkg = JSON.parse(raw);
+      } catch {
+        showToast('Invalid JSON — please check your package.json');
+        return;
+      }
+
+      const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+      const names = Object.keys(deps);
+      if (names.length === 0) { showToast('No dependencies found.'); return; }
+
+      // UI state
+      setBtnLoading(true);
+      document.getElementById('progress-section').style.display = 'block';
+      document.getElementById('results-section').style.display = 'none';
+      window.scrollTo({ top: document.getElementById('progress-section').offsetTop - 100, behavior: 'smooth' });
+
+      const results = [];
+      for (let i = 0; i < names.length; i++) {
+        const name = names[i];
+        const rawVer = deps[name].replace(/[\^~>=< ]/g, '').split('||')[0].trim();
+        const progress = Math.round(((i + 1) / names.length) * 100);
+
+        setProgress(progress, `Checking ${name}... (${i + 1}/${names.length})`);
+
+        const [npmInfo, vulns] = await Promise.all([
+          fetchNpm(name, rawVer),
+          fetchVulns(name, rawVer),
+        ]);
+
+        const dep = {
+          name,
+          currentVersion: rawVer,
+          latestVersion: npmInfo.latestVersion || rawVer,
+          isOutdated: rawVer !== (npmInfo.latestVersion || rawVer),
+          daysSinceUpdate: npmInfo.daysSinceUpdate || 0,
+          weeklyDownloads: npmInfo.weeklyDownloads || 0,
+          isDeprecated: npmInfo.isDeprecated || false,
+          vulnerabilities: vulns,
+        };
+        dep.status = getStatus(dep);
+        results.push(dep);
+      }
+
+      scanResults = {
+        totalPackages: results.length,
+        critical: results.filter(d => d.status === 'critical'),
+        warnings: results.filter(d => d.status === 'warning'),
+        ok: results.filter(d => d.status === 'ok'),
+        checkedAt: new Date(),
+      };
+
+      setBtnLoading(false);
+      document.getElementById('progress-section').style.display = 'none';
+      renderResults(scanResults);
+      window.scrollTo({ top: document.getElementById('results-section').offsetTop - 80, behavior: 'smooth' });
+    }
+
+    // ── API Calls ──
+    async function fetchNpm(name, currentVersion) {
+      try {
+        const res = await fetch(`https://registry.npmjs.org/${encodeURIComponent(name)}`);
+        if (!res.ok) return {};
+        const data = await res.json();
+        const latestVersion = data['dist-tags']?.latest || currentVersion;
+        const latestTime = data.time?.[latestVersion];
+        const daysSinceUpdate = latestTime
+          ? Math.floor((Date.now() - new Date(latestTime).getTime()) / 86400000)
+          : 0;
+        const isDeprecated = !!data.versions?.[latestVersion]?.deprecated;
+
+        let weeklyDownloads = 0;
+        try {
+          const dlRes = await fetch(`https://api.npmjs.org/downloads/point/last-week/${encodeURIComponent(name)}`);
+          const dlData = await dlRes.json();
+          weeklyDownloads = dlData.downloads || 0;
+        } catch {}
+
+        return { latestVersion, daysSinceUpdate, isDeprecated, weeklyDownloads };
+      } catch { return {}; }
+    }
+
+    async function fetchVulns(name, version) {
+      try {
+        const res = await fetch('https://api.osv.dev/v1/query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ version, package: { name, ecosystem: 'npm' } }),
+        });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return (data.vulns || []).map(v => ({
+          id: v.id,
+          severity: parseSeverity(v),
+          summary: v.summary || 'No description',
+          url: `https://osv.dev/vulnerability/${v.id}`,
+        }));
+      } catch { return []; }
+    }
+
+    function parseSeverity(vuln) {
+      const score = vuln.severity?.[0]?.score || vuln.database_specific?.cvss?.score || 0;
+      if (score >= 9) return 'CRITICAL';
+      if (score >= 7) return 'HIGH';
+      if (score >= 4) return 'MEDIUM';
+      return 'LOW';
+    }
+
+    function getStatus(dep) {
+      if (dep.vulnerabilities.some(v => v.severity === 'CRITICAL' || v.severity === 'HIGH')) return 'critical';
+      if (dep.isDeprecated || dep.vulnerabilities.length > 0 || dep.daysSinceUpdate > 365) return 'warning';
+      return 'ok';
+    }
+
+    // ── Render ──
+    function renderResults(result) {
+      // Summary
+      document.getElementById('summary-grid').innerHTML = `
+        <div class="s-card c-total"><div class="num">${result.totalPackages}</div><div class="lbl">Total</div></div>
+        <div class="s-card c-critical"><div class="num">${result.critical.length}</div><div class="lbl">Critical</div></div>
+        <div class="s-card c-warning"><div class="num">${result.warnings.length}</div><div class="lbl">Warning</div></div>
+        <div class="s-card c-ok"><div class="num">${result.ok.length}</div><div class="lbl">Healthy</div></div>
+      `;
+
+      renderTable([...result.critical, ...result.warnings, ...result.ok]);
+      renderFixPanel([...result.critical, ...result.warnings]);
+
+      document.getElementById('results-section').style.display = 'block';
+    }
+
+    function renderTable(deps) {
+      const tbody = document.getElementById('results-body');
+      tbody.innerHTML = deps.map((dep, i) => {
+        const statusClass = dep.status === 'critical' ? 'sp-critical' : dep.status === 'warning' ? 'sp-warning' : 'sp-ok';
+        const statusLabel = dep.status === 'critical' ? 'CRITICAL' : dep.status === 'warning' ? 'WARNING' : 'OK';
+
+        const vulns = dep.vulnerabilities.length > 0
+          ? dep.vulnerabilities.map(v => `<span class="vuln-badge v-${v.severity.toLowerCase()}">${v.severity}</span>`).join(' ')
+          : '<span class="v-none">—</span>';
+
+        const updated = dep.daysSinceUpdate > 365
+          ? `<span class="c-red">${Math.floor(dep.daysSinceUpdate / 365)}y ago</span>`
+          : dep.daysSinceUpdate > 90
+          ? `<span class="c-yellow">${dep.daysSinceUpdate}d ago</span>`
+          : `<span class="c-gray">${dep.daysSinceUpdate}d ago</span>`;
+
+        const downloads = dep.weeklyDownloads > 1_000_000
+          ? `<span class="c-green mono">${(dep.weeklyDownloads / 1_000_000).toFixed(1)}M</span>`
+          : dep.weeklyDownloads > 1_000
+          ? `<span class="mono">${(dep.weeklyDownloads / 1000).toFixed(0)}K</span>`
+          : `<span class="c-red mono">${dep.weeklyDownloads}</span>`;
+
+        return `<tr data-status="${dep.status}" style="animation-delay:${i * 0.04}s">
+          <td><div class="pkg-name">${dep.name}${dep.isDeprecated ? ' <span class="dep-tag">deprecated</span>' : ''}</div></td>
+          <td><span class="mono">${dep.currentVersion}</span></td>
+          <td><span class="mono ${dep.isOutdated ? 'c-outdated' : 'c-ok-v'}">${dep.latestVersion}</span></td>
+          <td>${updated}</td>
+          <td>${downloads}</td>
+          <td>${vulns}</td>
+          <td><span class="status-pill ${statusClass}"><span class="s-dot"></span>${statusLabel}</span></td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderFixPanel(deps) {
+      const fixDeps = deps.filter(d => d.isOutdated || d.vulnerabilities.length > 0);
+      if (fixDeps.length === 0) return;
+
+      document.getElementById('fix-commands').innerHTML = fixDeps.map(dep => `
+        <div class="fix-cmd" onclick="copyToClipboard('npm install ${dep.name}@${dep.latestVersion}')">
+          <span>npm install ${dep.name}@${dep.latestVersion}</span>
+          ${dep.vulnerabilities.length > 0 ? '<span class="fix-vuln-warn">⚠ has vulnerabilities</span>' : ''}
+        </div>
+      `).join('');
+
+      const allCmd = `npm install ${fixDeps.map(d => `${d.name}@${d.latestVersion}`).join(' ')}`;
+      document.getElementById('fix-all-section').innerHTML = `
+        <div class="fix-all-label">RUN ALL AT ONCE</div>
+        <div class="fix-cmd" onclick="copyToClipboard('${allCmd}')">
+          <span>${allCmd}</span>
+          <span style="color:var(--gray-5);font-size:0.6rem">click to copy</span>
+        </div>
+      `;
+    }
+
+    // ── Filter ──
+    function filterTable(status, btn) {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.querySelectorAll('#results-body tr').forEach(row => {
+        row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
+      });
+    }
+
+    // ── Toggle Fix ──
+    function toggleFix() {
+      const panel = document.getElementById('fix-panel');
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // ── Download HTML ──
+    function downloadHTML() {
+      if (!scanResults) return;
+      const html = generateHTMLReport(scanResults);
+      const blob = new Blob([html], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'opencheck-report.html';
+      a.click();
+      showToast('Report downloaded!');
+    }
+
+    function generateHTMLReport(result) {
+      const allDeps = [...result.critical, ...result.warnings, ...result.ok];
+      const rows = allDeps.map(dep => {
+        const sc = dep.status === 'critical' ? '#ff3b3b' : dep.status === 'warning' ? '#f5c800' : '#00d26a';
+        const sl = dep.status === 'critical' ? 'CRITICAL' : dep.status === 'warning' ? 'WARNING' : 'OK';
+        const vulns = dep.vulnerabilities.length > 0
+          ? dep.vulnerabilities.map(v => `<span style="font-family:monospace;font-size:0.6rem;padding:0.15rem 0.4rem;border-radius:3px;background:#1a0808;color:#ff6b6b">${v.severity}</span>`).join(' ')
+          : '—';
+        return `<tr><td><b>${dep.name}${dep.isDeprecated ? ' ⚠️' : ''}</b></td><td>${dep.currentVersion}</td><td style="color:${dep.isOutdated?'#f5c800':'#00d26a'}">${dep.latestVersion}</td><td>${dep.daysSinceUpdate}d ago</td><td>${dep.weeklyDownloads > 1e6 ? (dep.weeklyDownloads/1e6).toFixed(1)+'M' : (dep.weeklyDownloads/1000).toFixed(0)+'K'}</td><td>${vulns}</td><td><span style="background:${sc};padding:0.2rem 0.6rem;border-radius:999px;font-size:0.7rem;color:#000;font-weight:700">${sl}</span></td></tr>`;
+      }).join('');
+
+      return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>OpenCheck Report</title><style>body{background:#080808;color:#f5f5f0;font-family:sans-serif;padding:2rem}table{width:100%;border-collapse:collapse}th,td{padding:0.75rem;border-bottom:1px solid #222;text-align:left;font-size:0.85rem}th{color:#555;font-size:0.7rem;text-transform:uppercase}</style></head><body><h2>🔍 OpenCheck Report</h2><p style="color:#888;font-size:0.8rem;margin-bottom:2rem">Generated: ${result.checkedAt.toLocaleString()} · ${result.totalPackages} packages</p><table><thead><tr><th>Package</th><th>Current</th><th>Latest</th><th>Updated</th><th>Downloads</th><th>Vulns</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+    }
+
+    // ── Reset ──
+    function resetScan() {
+      document.getElementById('results-section').style.display = 'none';
+      document.getElementById('paste-area').value = '';
+      document.getElementById('fix-panel').style.display = 'none';
+      scanResults = null;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ── Helpers ──
+    function setProgress(pct, msg) {
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('progress-log').textContent = msg;
+    }
+
+    function setBtnLoading(loading) {
+      const btn = document.getElementById('scan-btn');
+      const txt = document.getElementById('btn-text');
+      btn.disabled = loading;
+      txt.innerHTML = loading ? '<span class="spinner"></span> Scanning...' : 'Scan Dependencies';
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard!'));
+    }
+
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2500);
+    }
+  </script>
+</body>
+</html>
