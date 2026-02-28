@@ -116,6 +116,7 @@ Or add manually to your workflow:
 - [x] v0.2 - HTML report export
 - [x] v0.3 - GitHub Actions integration
 - [x] v0.4 - Fix suggestions & JSON output
+- [x] v0.5 - Basic web landing page
 - [ ] v1.0 - Web dashboard
 - [ ] v1.1 - Pro plan (team features, Slack notifications)
 
