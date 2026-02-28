@@ -2,7 +2,7 @@
 
 > Dependency security & health checker for Node.js projects — fast, free, no AI required.
 
-[![npm version](https://img.shields.io/npm/v/opencheck)](https://npmjs.com/package/opencheck)
+[![npm version](https://img.shields.io/npm/v/@chefharun/opencheck)](https://npmjs.com/package/@chefharun/opencheck)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ## Features
@@ -17,29 +17,29 @@
 ## Install
 
 ```bash
-npm install -g opencheck
+npm install -g @chefharun/opencheck
 ```
 
 Or use without installing:
 
 ```bash
-npx opencheck check
+npx @chefharun/opencheck check .
 ```
 
 ## Usage
 
 ```bash
 # Check current directory
-opencheck check
+opencheckjs check .
 
 # Check specific project
-opencheck check ./my-project
+opencheckjs check ./my-project
 
 # Show only issues (skip healthy packages)
-opencheck check --only-issues
+opencheckjs check . --only-issues
 
 # JSON output (for CI/CD pipelines)
-opencheck check --json
+opencheckjs check . --json
 ```
 
 ## Example Output
@@ -63,7 +63,7 @@ Total packages: 42
 
 ```yaml
 - name: Check dependencies
-  run: npx opencheck check --only-issues
+  run: npx @chefharun/opencheck check . --only-issues
 ```
 
 ## Roadmap
