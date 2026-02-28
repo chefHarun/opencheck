@@ -1,6 +1,6 @@
 {
     "name": "@chefharun/opencheck",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "Dependency security & health checker for Node.js projects",
     "main": "dist/cli.js",
     "bin": {
