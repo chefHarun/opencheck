@@ -3,9 +3,9 @@
     "version": "0.1.2",
     "description": "Dependency security & health checker for Node.js projects",
     "main": "dist/cli.js",
-    "bin": {
-        "opencheck": "./dist/cli.js"
-    },
+"bin": {
+  "opencheckjs": "./dist/cli.js"
+},
     "scripts": {
         "build": "tsc",
         "dev": "tsx src/cli.ts",
