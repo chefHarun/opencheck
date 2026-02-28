@@ -1,0 +1,30 @@
+name: OpenCheck - Dependency Security
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    - cron: '0 9 * * 1'
+jobs:
+  opencheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run OpenCheck
+        run: npx @chefharun/opencheck check . --only-issues
+      - name: Export HTML Report
+        if: always()
+        run: npx @chefharun/opencheck check . --html
+      - name: Upload Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: opencheck-report
+          path: opencheck-report.html
