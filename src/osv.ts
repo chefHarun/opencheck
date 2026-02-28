@@ -15,8 +15,7 @@ export async function getVulnerabilities(
     });
 
     if (!res.ok) return [];
-    const data = await res.json();
-
+    const data = await res.json() as any;
     return (data.vulns ?? []).map((v: any) => ({
       id: v.id,
       severity: parseSeverity(v),

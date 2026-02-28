@@ -7,8 +7,8 @@ export async function getNpmInfo(
   try {
     const res = await fetch(`https://registry.npmjs.org/${name}`);
     if (!res.ok) throw new Error(`NPM API error for ${name}`);
-    const data = await res.json();
-
+    const data = await res.json() as any;
+    
     const latestVersion = data["dist-tags"]?.latest ?? currentVersion;
     const latestTime = data.time?.[latestVersion];
     const daysSinceUpdate = latestTime
@@ -44,7 +44,7 @@ async function getWeeklyDownloads(name: string): Promise<number> {
     const res = await fetch(
       `https://api.npmjs.org/downloads/point/last-week/${name}`
     );
-    const data = await res.json();
+    const data = await res.json() as any;
     return data.downloads ?? 0;
   } catch {
     return 0;

@@ -80,4 +80,4 @@ PRs welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-MIT © [Your Name](https://github.com/yourusername)
+MIT © [chefHarun](https://github.com/chefHarun)

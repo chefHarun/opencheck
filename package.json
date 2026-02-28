@@ -1,5 +1,5 @@
 {
-    "name": "opencheck",
+"name": "@chefharun/opencheck",
     "version": "0.1.0",
     "description": "Dependency security & health checker for Node.js projects",
     "main": "dist/index.js",
