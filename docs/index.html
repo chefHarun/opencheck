@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenCheck — Dependency Health Scanner</title>
+  <title>OpenCheck - Dependency Health Scanner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -33,7 +33,7 @@
       overflow-x: hidden;
     }
 
-    /* ── NAV ── */
+    /* €€ NAV €€ */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -105,7 +105,7 @@
       color: var(--white);
     }
 
-    /* ── HERO ── */
+    /* €€ HERO €€ */
     .hero {
       padding: 10rem 3rem 6rem;
       max-width: 900px;
@@ -159,7 +159,7 @@
       animation: fadeUp 0.6s ease 0.2s both;
     }
 
-    /* ── UPLOAD ZONE ── */
+    /* â”€â”€ UPLOAD ZONE â”€â”€ */
     #upload-section {
       max-width: 680px;
       margin: 0 auto;
@@ -214,6 +214,35 @@
       color: var(--white);
       text-decoration: underline;
       text-underline-offset: 3px;
+    }
+
+    .manifest-controls {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .manifest-select {
+      width: 100%;
+      background: var(--gray-1);
+      border: 1.5px solid var(--gray-3);
+      border-radius: 10px;
+      color: var(--white);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.8rem 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .manifest-select:focus { border-color: var(--gray-5); }
+
+    .manifest-help {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--gray-5);
+      line-height: 1.6;
     }
 
     .or-divider {
@@ -277,7 +306,7 @@
     .scan-btn:hover { background: var(--gray-6); }
     .scan-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* ── PROGRESS ── */
+    /* €€ PROGRESS €€ */
     #progress-section {
       display: none;
       max-width: 680px;
@@ -307,7 +336,7 @@
       text-align: center;
     }
 
-    /* ── RESULTS ── */
+    /* €€ RESULTS €€ */
     #results-section {
       display: none;
       max-width: 1100px;
@@ -594,7 +623,11 @@
       letter-spacing: 0.08em;
     }
 
-    /* ── FOOTER ── */
+    .mt-5 {
+      margin-top: 5rem;
+    }
+
+      /* €€ FOOTER €€ */
     footer {
       border-top: 1px solid var(--gray-2);
       padding: 1.5rem 3rem;
@@ -630,7 +663,7 @@
       border-radius: 999px;
     }
 
-    /* ── ANIMATIONS ── */
+    /* €€ ANIMATIONS €€ */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -649,7 +682,7 @@
       display: inline-block;
     }
 
-    /* ── TOAST ── */
+    /* €€ TOAST €€ */
     .toast {
       position: fixed;
       bottom: 2rem;
@@ -689,8 +722,8 @@
     </a>
     <div class="nav-links">
       <a href="https://github.com/chefHarun/opencheck" target="_blank">GitHub</a>
-      <a href="https://npmjs.com/package/@chefharun/opencheck" target="_blank">npm</a>
-      <a href="https://npmjs.com/package/@chefharun/opencheck" target="_blank" class="nav-npm">npm i -g @chefharun/opencheck</a>
+      <a href="https://npmjs.com/package/opencheck-cli" target="_blank">npm</a>
+      <a href="https://npmjs.com/package/opencheck-cli" target="_blank" class="nav-npm">npm i -g opencheck-cli</a>
     </div>
   </nav>
 
@@ -702,26 +735,49 @@
     </div>
     <h1>Scan your dependencies.<br><em>Stay secure.</em></h1>
     <p class="hero-sub">
-      Upload your package.json and instantly check for vulnerabilities,
-      outdated packages, and deprecated dependencies.
+      Upload dependency manifests and instantly check for vulnerabilities,
+      outdated packages, and deprecated dependencies across major ecosystems.
     </p>
   </section>
 
   <!-- UPLOAD -->
   <section id="upload-section">
     <div class="drop-zone" id="drop-zone">
-      <input type="file" id="file-input" accept=".json">
-      <span class="drop-icon">📦</span>
-      <div class="drop-title">Drop your package.json here</div>
+      <input type="file" id="file-input" accept=".json,.txt,.toml,.mod,.xml,.gradle,.kts,.csproj,.yaml,.yml">
+      <span class="drop-icon">📂</span>
+      <div class="drop-title">Drop your dependency file here</div>
       <div class="drop-sub">or <span>browse files</span></div>
     </div>
 
-    <div class="or-divider">OR PASTE JSON</div>
+    <div class="manifest-controls">
+      <select class="manifest-select" id="manifest-type">
+        <option value="auto">Auto detect manifest type</option>
+        <option value="package.json">package.json (Node.js)</option>
+        <option value="requirements.txt">requirements.txt (Python)</option>
+        <option value="Cargo.toml">Cargo.toml (Rust)</option>
+        <option value="Gemfile">Gemfile (Ruby)</option>
+        <option value="composer.json">composer.json (PHP)</option>
+        <option value="go.mod">go.mod (Go)</option>
+        <option value="pom.xml">pom.xml (Java/Maven)</option>
+        <option value="build.gradle">build.gradle / build.gradle.kts (Java/Gradle)</option>
+        <option value=".csproj">.csproj (Dotnet/NuGet)</option>
+        <option value="packages.lock.json">packages.lock.json (Dotnet/NuGet)</option>
+        <option value="pubspec.yaml">pubspec.yaml (Dart)</option>
+      </select>
+      <div class="manifest-help">
+        Supported: Node.js, Python, Rust, Ruby, PHP, Go, Java, .NET, Dart
+      </div>
+    </div>
+
+    <div class="or-divider">OR PASTE MANIFEST</div>
 
     <textarea
       class="paste-area"
       id="paste-area"
-      placeholder='{ "dependencies": { "lodash": "^4.17.15" }, "devDependencies": { ... } }'
+      placeholder='{
+  "dependencies": { "lodash": "^4.17.15" },
+  "devDependencies": { "typescript": "^5.0.0" }
+}'
     ></textarea>
 
     <button class="scan-btn" id="scan-btn" onclick="startScan()">
@@ -743,8 +799,8 @@
       <div class="results-title">Scan Results</div>
       <div class="results-actions">
         <button class="btn-outline" onclick="toggleFix()">🔧 Fix Commands</button>
-        <button class="btn-outline" onclick="downloadHTML()">⬇ Export HTML</button>
-        <button class="btn-outline" onclick="resetScan()">↩ New Scan</button>
+        <button class="btn-outline" onclick="downloadHTML()">🖨 Export HTML</button>
+        <button class="btn-outline" onclick="resetScan()">🔄 New Scan</button>
       </div>
     </div>
 
@@ -782,18 +838,35 @@
   </section>
 
   <!-- FOOTER -->
-  <footer>
+  <footer class="mt-5">
     <a href="https://github.com/chefHarun/opencheck" target="_blank">github.com/chefHarun/opencheck</a>
     <div class="footer-right">
       <a href="https://osv.dev" target="_blank">Powered by OSV.dev</a>
-      <span class="footer-badge">v0.1.0</span>
+      <span class="footer-badge">v0.1.4</span>
     </div>
   </footer>
 
-  <script>
+    <script>
     let scanResults = null;
+    const version = '0.1.4';
+    const manifestSelect = document.getElementById('manifest-type');
+    const footerBadge = document.querySelector('.footer-badge');
+    if (footerBadge) footerBadge.textContent = `v${version}`;
 
-    // ── Drag & Drop ──
+    const MANIFEST_CONFIG = {
+      'package.json': { language: 'nodejs', ecosystem: 'npm' },
+      'requirements.txt': { language: 'python', ecosystem: 'PyPI' },
+      'Cargo.toml': { language: 'rust', ecosystem: 'crates.io' },
+      'Gemfile': { language: 'ruby', ecosystem: 'RubyGems' },
+      'composer.json': { language: 'php', ecosystem: 'Packagist' },
+      'go.mod': { language: 'go', ecosystem: 'Go' },
+      'pom.xml': { language: 'java', ecosystem: 'Maven' },
+      'build.gradle': { language: 'java', ecosystem: 'Maven' },
+      '.csproj': { language: 'dotnet', ecosystem: 'NuGet' },
+      'packages.lock.json': { language: 'dotnet', ecosystem: 'NuGet' },
+      'pubspec.yaml': { language: 'dart', ecosystem: 'Pub' },
+    };
+
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
 
@@ -815,32 +888,305 @@
       if (e.target.files[0]) readFile(e.target.files[0]);
     });
 
+    function inferManifestFromFilename(fileName) {
+      const lower = fileName.toLowerCase();
+      if (lower.endsWith('package.json')) return 'package.json';
+      if (lower.endsWith('requirements.txt')) return 'requirements.txt';
+      if (lower.endsWith('cargo.toml')) return 'Cargo.toml';
+      if (lower.endsWith('gemfile')) return 'Gemfile';
+      if (lower.endsWith('composer.json')) return 'composer.json';
+      if (lower.endsWith('go.mod')) return 'go.mod';
+      if (lower.endsWith('pom.xml')) return 'pom.xml';
+      if (lower.endsWith('build.gradle') || lower.endsWith('build.gradle.kts')) return 'build.gradle';
+      if (lower.endsWith('.csproj')) return '.csproj';
+      if (lower.endsWith('packages.lock.json')) return 'packages.lock.json';
+      if (lower.endsWith('pubspec.yaml')) return 'pubspec.yaml';
+      return 'auto';
+    }
+
     function readFile(file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         document.getElementById('paste-area').value = e.target.result;
+        manifestSelect.value = inferManifestFromFilename(file.name);
       };
       reader.readAsText(file);
     }
 
-    // ── Scan ──
+    function safeJsonParse(raw) {
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+
+    function normalizeVersion(value) {
+      if (value == null) return '0.0.0';
+      const normalized = String(value)
+        .replace(/^["']|["']$/g, '')
+        .replace(/^[\^~><= ]+/, '')
+        .replace(/^v/i, '')
+        .trim();
+      return normalized || '0.0.0';
+    }
+
+    function detectManifestType(raw) {
+      const trimmed = raw.trim();
+      const json = safeJsonParse(trimmed);
+      if (json && typeof json === 'object') {
+        if (json.require || json['require-dev']) return 'composer.json';
+        if (json.dependencies || json.devDependencies) return 'package.json';
+        if (json.version && json.dependencies) return 'packages.lock.json';
+      }
+
+      if (/<Project[\s>]/i.test(raw) && /PackageReference/i.test(raw)) return '.csproj';
+      if (/<project[\s>]/i.test(raw) && /<dependency>/i.test(raw)) return 'pom.xml';
+      if (/^\s*\[package\]/m.test(raw) && /^\s*\[dependencies\]/m.test(raw)) return 'Cargo.toml';
+      if (/^\s*module\s+/m.test(raw) && /^\s*require/m.test(raw)) return 'go.mod';
+      if (/^\s*gem\s+['"]/m.test(raw)) return 'Gemfile';
+      if (/^\s*dependencies\s*:\s*$/m.test(raw) && /flutter|environment|sdk:/i.test(raw)) return 'pubspec.yaml';
+      if (/(implementation|api|compileOnly|runtimeOnly)\s*\(?\s*["'][^"']+:[^"']+:[^"']+["']/m.test(raw)) return 'build.gradle';
+      if (/^[A-Za-z0-9_.-]+(?:\[[^\]]+\])?\s*(==|>=|<=|~=|>|<)/m.test(raw)) return 'requirements.txt';
+
+      return null;
+    }
+
+    function parsePackageJson(raw) {
+      const pkg = safeJsonParse(raw);
+      if (!pkg) return null;
+      return {
+        ...(pkg.dependencies || {}),
+        ...(pkg.devDependencies || {}),
+      };
+    }
+
+    function parseRequirements(raw) {
+      const deps = {};
+      raw.split('\n').forEach((line) => {
+        const clean = line.trim().split('#')[0].trim();
+        if (!clean) return;
+
+        const match = clean.match(/^([A-Za-z0-9_.-]+)(?:\[[^\]]+\])?\s*([><=!~].+)?$/);
+        if (!match) return;
+
+        const name = match[1];
+        const versionExpr = (match[2] || '').split(',')[0].trim();
+        deps[name] = normalizeVersion(versionExpr || '0.0.0');
+      });
+      return deps;
+    }
+
+    function parseCargoToml(raw) {
+      const deps = {};
+      let inDeps = false;
+
+      raw.split('\n').forEach((line) => {
+        const section = line.match(/^\s*\[([^\]]+)\]\s*$/);
+        if (section) {
+          const key = section[1].trim();
+          inDeps = key === 'dependencies' || key === 'dev-dependencies';
+          return;
+        }
+        if (!inDeps) return;
+
+        const simple = line.match(/^\s*([A-Za-z0-9_-]+)\s*=\s*"([^"]+)"\s*$/);
+        if (simple) {
+          deps[simple[1]] = normalizeVersion(simple[2]);
+          return;
+        }
+
+        const table = line.match(/^\s*([A-Za-z0-9_-]+)\s*=\s*\{[^}]*version\s*=\s*"([^"]+)"[^}]*\}\s*$/);
+        if (table) deps[table[1]] = normalizeVersion(table[2]);
+      });
+
+      return deps;
+    }
+
+    function parseGemfile(raw) {
+      const deps = {};
+      raw.split('\n').forEach((line) => {
+        const match = line.match(/gem\s+['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]/);
+        if (!match) return;
+        deps[match[1]] = normalizeVersion(match[2]);
+      });
+      return deps;
+    }
+
+    function parseComposer(raw) {
+      const pkg = safeJsonParse(raw);
+      if (!pkg) return null;
+      return {
+        ...(pkg.require || {}),
+        ...(pkg['require-dev'] || {}),
+      };
+    }
+
+    function parseGoMod(raw) {
+      const deps = {};
+      let inRequireBlock = false;
+
+      raw.split('\n').forEach((line) => {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('//')) return;
+
+        if (trimmed === 'require (') {
+          inRequireBlock = true;
+          return;
+        }
+        if (inRequireBlock && trimmed === ')') {
+          inRequireBlock = false;
+          return;
+        }
+
+        const match = inRequireBlock
+          ? trimmed.match(/^([^\s]+)\s+v([^\s]+)/)
+          : trimmed.match(/^require\s+([^\s]+)\s+v([^\s]+)/);
+
+        if (match) deps[match[1]] = normalizeVersion(match[2]);
+      });
+
+      return deps;
+    }
+
+    function parsePom(raw) {
+      const deps = {};
+      const blocks = raw.match(/<dependency>[\s\S]*?<\/dependency>/g) || [];
+
+      blocks.forEach((block) => {
+        const group = block.match(/<groupId>\s*([^<]+)\s*<\/groupId>/)?.[1]?.trim();
+        const artifact = block.match(/<artifactId>\s*([^<]+)\s*<\/artifactId>/)?.[1]?.trim();
+        const versionRaw = block.match(/<version>\s*([^<]+)\s*<\/version>/)?.[1]?.trim() || '0.0.0';
+        const scope = block.match(/<scope>\s*([^<]+)\s*<\/scope>/)?.[1]?.trim();
+        if (!group || !artifact || scope === 'test') return;
+        deps[`${group}:${artifact}`] = versionRaw.includes('${') ? '0.0.0' : normalizeVersion(versionRaw);
+      });
+
+      return deps;
+    }
+
+    function parseGradle(raw) {
+      const deps = {};
+      const regex = /(?:implementation|api|compileOnly|runtimeOnly|testImplementation|testRuntimeOnly)\s*\(?\s*["']([^:"']+):([^:"']+):([^"')]+)["']\s*\)?/g;
+      for (const match of raw.matchAll(regex)) {
+        const group = (match[1] || '').trim();
+        const artifact = (match[2] || '').trim();
+        const version = normalizeVersion(match[3] || '0.0.0');
+        if (!group || !artifact) continue;
+        deps[`${group}:${artifact}`] = version;
+      }
+      return deps;
+    }
+
+    function parseCsproj(raw) {
+      const deps = {};
+      const inline = /<PackageReference[^>]*Include="([^"]+)"[^>]*Version="([^"]+)"[^>]*\/?>/g;
+      const block = /<PackageReference[^>]*Include="([^"]+)"[^>]*>([\s\S]*?)<\/PackageReference>/g;
+
+      for (const match of raw.matchAll(inline)) {
+        deps[match[1].trim()] = normalizeVersion(match[2] || '0.0.0');
+      }
+      for (const match of raw.matchAll(block)) {
+        const name = match[1].trim();
+        const version = match[2].match(/<Version>\s*([^<]+)\s*<\/Version>/)?.[1];
+        if (name && version) deps[name] = normalizeVersion(version);
+      }
+      return deps;
+    }
+
+    function parsePackagesLock(raw) {
+      const data = safeJsonParse(raw);
+      if (!data || typeof data !== 'object') return null;
+
+      const deps = {};
+      const frameworks = data.dependencies || {};
+      Object.keys(frameworks).forEach((framework) => {
+        const packages = frameworks[framework] || {};
+        Object.keys(packages).forEach((name) => {
+          const meta = packages[name] || {};
+          const versionRaw = meta.resolved || meta.requested || '0.0.0';
+          deps[name] = normalizeVersion(versionRaw);
+        });
+      });
+      return deps;
+    }
+
+    function parsePubspec(raw) {
+      const deps = {};
+      let section = null;
+
+      raw.split('\n').forEach((line) => {
+        const commentFree = line.replace(/#.*/, '');
+        if (!commentFree.trim()) return;
+
+        const topLevel = commentFree.match(/^([a-zA-Z_][a-zA-Z0-9_]*):\s*$/);
+        if (topLevel) {
+          const key = topLevel[1];
+          section = (key === 'dependencies' || key === 'dev_dependencies') ? key : null;
+          return;
+        }
+        if (!section) return;
+
+        const match = commentFree.match(/^\s{2}([a-zA-Z0-9_]+):\s*(.+)?$/);
+        if (!match) return;
+        const name = match[1];
+        const value = (match[2] || '').trim();
+        if (!value || value === 'any') return;
+        if (value.startsWith('{') || value.startsWith('path:') || value.startsWith('git:') || value.startsWith('sdk:') || value.startsWith('file:')) return;
+        deps[name] = normalizeVersion(value);
+      });
+
+      return deps;
+    }
+
+    function parseManifest(raw, selectedType) {
+      const manifestType = selectedType === 'auto' ? detectManifestType(raw) : selectedType;
+      if (!manifestType || !MANIFEST_CONFIG[manifestType]) return null;
+
+      let dependencies = null;
+      if (manifestType === 'package.json') dependencies = parsePackageJson(raw);
+      if (manifestType === 'requirements.txt') dependencies = parseRequirements(raw);
+      if (manifestType === 'Cargo.toml') dependencies = parseCargoToml(raw);
+      if (manifestType === 'Gemfile') dependencies = parseGemfile(raw);
+      if (manifestType === 'composer.json') dependencies = parseComposer(raw);
+      if (manifestType === 'go.mod') dependencies = parseGoMod(raw);
+      if (manifestType === 'pom.xml') dependencies = parsePom(raw);
+      if (manifestType === 'build.gradle') dependencies = parseGradle(raw);
+      if (manifestType === '.csproj') dependencies = parseCsproj(raw);
+      if (manifestType === 'packages.lock.json') dependencies = parsePackagesLock(raw);
+      if (manifestType === 'pubspec.yaml') dependencies = parsePubspec(raw);
+
+      if (!dependencies) return null;
+      const config = MANIFEST_CONFIG[manifestType];
+      return {
+        manifestType,
+        language: config.language,
+        ecosystem: config.ecosystem,
+        dependencies,
+      };
+    }
+
     async function startScan() {
       const raw = document.getElementById('paste-area').value.trim();
-      if (!raw) { showToast('Please upload or paste a package.json first.'); return; }
-
-      let pkg;
-      try {
-        pkg = JSON.parse(raw);
-      } catch {
-        showToast('Invalid JSON — please check your package.json');
+      if (!raw) {
+        showToast('Please upload or paste a dependency manifest first.');
         return;
       }
 
-      const deps = { ...pkg.dependencies, ...pkg.devDependencies };
-      const names = Object.keys(deps);
-      if (names.length === 0) { showToast('No dependencies found.'); return; }
+      const selectedType = manifestSelect.value;
+      const manifest = parseManifest(raw, selectedType);
+      if (!manifest) {
+        showToast('Manifest could not be parsed. Pick a manifest type and try again.');
+        return;
+      }
 
-      // UI state
+      const deps = manifest.dependencies;
+      const names = Object.keys(deps).filter((n) => n !== 'php' && n !== 'ext-json');
+      if (names.length === 0) {
+        showToast('No dependencies found.');
+        return;
+      }
+
       setBtnLoading(true);
       document.getElementById('progress-section').style.display = 'block';
       document.getElementById('results-section').style.display = 'none';
@@ -849,25 +1195,26 @@
       const results = [];
       for (let i = 0; i < names.length; i++) {
         const name = names[i];
-        const rawVer = deps[name].replace(/[\^~>=< ]/g, '').split('||')[0].trim();
+        const rawVer = normalizeVersion(deps[name]);
         const progress = Math.round(((i + 1) / names.length) * 100);
 
         setProgress(progress, `Checking ${name}... (${i + 1}/${names.length})`);
 
-        const [npmInfo, vulns] = await Promise.all([
-          fetchNpm(name, rawVer),
-          fetchVulns(name, rawVer),
+        const [registryInfo, vulns] = await Promise.all([
+          fetchRegistryInfo(name, rawVer, manifest.language),
+          fetchVulns(name, rawVer, manifest.ecosystem),
         ]);
 
         const dep = {
           name,
           currentVersion: rawVer,
-          latestVersion: npmInfo.latestVersion || rawVer,
-          isOutdated: rawVer !== (npmInfo.latestVersion || rawVer),
-          daysSinceUpdate: npmInfo.daysSinceUpdate || 0,
-          weeklyDownloads: npmInfo.weeklyDownloads || 0,
-          isDeprecated: npmInfo.isDeprecated || false,
+          latestVersion: registryInfo.latestVersion || rawVer,
+          isOutdated: rawVer !== (registryInfo.latestVersion || rawVer),
+          daysSinceUpdate: registryInfo.daysSinceUpdate || 0,
+          weeklyDownloads: registryInfo.weeklyDownloads || 0,
+          isDeprecated: registryInfo.isDeprecated || false,
           vulnerabilities: vulns,
+          language: manifest.language,
         };
         dep.status = getStatus(dep);
         results.push(dep);
@@ -875,10 +1222,12 @@
 
       scanResults = {
         totalPackages: results.length,
-        critical: results.filter(d => d.status === 'critical'),
-        warnings: results.filter(d => d.status === 'warning'),
-        ok: results.filter(d => d.status === 'ok'),
+        critical: results.filter((d) => d.status === 'critical'),
+        warnings: results.filter((d) => d.status === 'warning'),
+        ok: results.filter((d) => d.status === 'ok'),
         checkedAt: new Date(),
+        language: manifest.language,
+        ecosystem: manifest.ecosystem,
       };
 
       setBtnLoading(false);
@@ -887,7 +1236,19 @@
       window.scrollTo({ top: document.getElementById('results-section').offsetTop - 80, behavior: 'smooth' });
     }
 
-    // ── API Calls ──
+    async function fetchRegistryInfo(name, currentVersion, language) {
+      if (language === 'nodejs') return fetchNpm(name, currentVersion);
+      if (language === 'python') return fetchPypi(name, currentVersion);
+      if (language === 'rust') return fetchCargo(name, currentVersion);
+      if (language === 'ruby') return fetchRubyGems(name, currentVersion);
+      if (language === 'php') return fetchComposer(name, currentVersion);
+      if (language === 'go') return fetchGo(name, currentVersion);
+      if (language === 'java') return fetchMaven(name, currentVersion);
+      if (language === 'dotnet') return fetchNuget(name, currentVersion);
+      if (language === 'dart') return fetchPubDev(name, currentVersion);
+      return {};
+    }
+
     async function fetchNpm(name, currentVersion) {
       try {
         const res = await fetch(`https://registry.npmjs.org/${encodeURIComponent(name)}`);
@@ -908,25 +1269,194 @@
         } catch {}
 
         return { latestVersion, daysSinceUpdate, isDeprecated, weeklyDownloads };
-      } catch { return {}; }
+      } catch {
+        return {};
+      }
     }
 
-    async function fetchVulns(name, version) {
+    async function fetchPypi(name, currentVersion) {
+      try {
+        const res = await fetch(`https://pypi.org/pypi/${encodeURIComponent(name)}/json`);
+        if (!res.ok) return {};
+        const data = await res.json();
+        const latestVersion = data.info?.version || currentVersion;
+        const releaseDate = data.releases?.[latestVersion]?.[0]?.upload_time;
+        const daysSinceUpdate = releaseDate
+          ? Math.floor((Date.now() - new Date(releaseDate).getTime()) / 86400000)
+          : 0;
+        return {
+          latestVersion,
+          daysSinceUpdate,
+          weeklyDownloads: 0,
+          isDeprecated: false,
+        };
+      } catch {
+        return {};
+      }
+    }
+
+    async function fetchCargo(name, currentVersion) {
+      try {
+        const res = await fetch(`https://crates.io/api/v1/crates/${encodeURIComponent(name)}`);
+        if (!res.ok) return {};
+        const data = await res.json();
+        const latestVersion = data.crate?.newest_version || currentVersion;
+        const updatedAt = data.crate?.updated_at;
+        const daysSinceUpdate = updatedAt
+          ? Math.floor((Date.now() - new Date(updatedAt).getTime()) / 86400000)
+          : 0;
+        return {
+          latestVersion,
+          daysSinceUpdate,
+          weeklyDownloads: data.crate?.recent_downloads || 0,
+          isDeprecated: false,
+        };
+      } catch {
+        return {};
+      }
+    }
+
+    async function fetchRubyGems(name, currentVersion) {
+      try {
+        const res = await fetch(`https://rubygems.org/api/v1/gems/${encodeURIComponent(name)}.json`);
+        if (!res.ok) return {};
+        const data = await res.json();
+        return {
+          latestVersion: data.version || currentVersion,
+          daysSinceUpdate: 0,
+          weeklyDownloads: data.downloads || 0,
+          isDeprecated: false,
+        };
+      } catch {
+        return {};
+      }
+    }
+
+    async function fetchComposer(name, currentVersion) {
+      try {
+        const res = await fetch(`https://repo.packagist.org/packages/${encodeURIComponent(name)}.json`);
+        if (!res.ok) return {};
+        const data = await res.json();
+        const versions = Object.keys(data.package?.versions || {}).filter((v) => !v.startsWith('dev-'));
+        return {
+          latestVersion: (versions[0] || currentVersion).replace(/^v/, ''),
+          daysSinceUpdate: 0,
+          weeklyDownloads: data.package?.downloads?.monthly || 0,
+          isDeprecated: false,
+        };
+      } catch {
+        return {};
+      }
+    }
+
+    async function fetchGo(name, currentVersion) {
+      try {
+        const res = await fetch(`https://proxy.golang.org/${encodeURIComponent(name)}/@latest`);
+        if (!res.ok) return {};
+        const data = await res.json();
+        const latestVersion = (data.Version || currentVersion).replace(/^v/, '');
+        const daysSinceUpdate = data.Time
+          ? Math.floor((Date.now() - new Date(data.Time).getTime()) / 86400000)
+          : 0;
+        return {
+          latestVersion,
+          daysSinceUpdate,
+          weeklyDownloads: 0,
+          isDeprecated: false,
+        };
+      } catch {
+        return {};
+      }
+    }
+
+    async function fetchMaven(name, currentVersion) {
+      const [groupId, artifactId] = String(name).split(':');
+      if (!groupId || !artifactId) return {};
+      try {
+        const params = new URLSearchParams({
+          q: `g:"${groupId}" AND a:"${artifactId}"`,
+          rows: '1',
+          wt: 'json',
+        });
+        const res = await fetch(`https://search.maven.org/solrsearch/select?${params.toString()}`);
+        if (!res.ok) return {};
+        const data = await res.json();
+        const doc = data.response?.docs?.[0];
+        const latestVersion = doc?.latestVersion || currentVersion;
+        const daysSinceUpdate = doc?.timestamp
+          ? Math.floor((Date.now() - Number(doc.timestamp)) / 86400000)
+          : 0;
+        return {
+          latestVersion,
+          daysSinceUpdate,
+          weeklyDownloads: 0,
+          isDeprecated: false,
+        };
+      } catch {
+        return {};
+      }
+    }
+
+    async function fetchNuget(name, currentVersion) {
+      try {
+        const id = encodeURIComponent(String(name).toLowerCase());
+        const res = await fetch(`https://api.nuget.org/v3-flatcontainer/${id}/index.json`);
+        if (!res.ok) return {};
+        const data = await res.json();
+        const versions = Array.isArray(data.versions) ? data.versions : [];
+        if (versions.length === 0) return {};
+        const stableVersions = versions.filter((v) => !String(v).includes('-'));
+        const latestVersion = String(stableVersions[stableVersions.length - 1] || versions[versions.length - 1] || currentVersion).replace(/^v/i, '');
+        return {
+          latestVersion,
+          daysSinceUpdate: 0,
+          weeklyDownloads: 0,
+          isDeprecated: false,
+        };
+      } catch {
+        return {};
+      }
+    }
+
+    async function fetchPubDev(name, currentVersion) {
+      try {
+        const res = await fetch(`https://pub.dev/api/packages/${encodeURIComponent(name)}`);
+        if (!res.ok) return {};
+        const data = await res.json();
+        const latestVersion = data.latest?.version || currentVersion;
+        const published = data.latest?.published;
+        const daysSinceUpdate = published
+          ? Math.floor((Date.now() - new Date(published).getTime()) / 86400000)
+          : 0;
+        return {
+          latestVersion,
+          daysSinceUpdate,
+          weeklyDownloads: 0,
+          isDeprecated: Boolean(data.isDiscontinued),
+        };
+      } catch {
+        return {};
+      }
+    }
+
+    async function fetchVulns(name, version, ecosystem) {
       try {
         const res = await fetch('https://api.osv.dev/v1/query', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ version, package: { name, ecosystem: 'npm' } }),
+          body: JSON.stringify({ version, package: { name, ecosystem } }),
         });
         if (!res.ok) return [];
         const data = await res.json();
-        return (data.vulns || []).map(v => ({
+        return (data.vulns || []).map((v) => ({
           id: v.id,
           severity: parseSeverity(v),
           summary: v.summary || 'No description',
           url: `https://osv.dev/vulnerability/${v.id}`,
         }));
-      } catch { return []; }
+      } catch {
+        return [];
+      }
     }
 
     function parseSeverity(vuln) {
@@ -938,14 +1468,17 @@
     }
 
     function getStatus(dep) {
-      if (dep.vulnerabilities.some(v => v.severity === 'CRITICAL' || v.severity === 'HIGH')) return 'critical';
+      if (dep.vulnerabilities.some((v) => v.severity === 'CRITICAL' || v.severity === 'HIGH')) return 'critical';
       if (dep.isDeprecated || dep.vulnerabilities.length > 0 || dep.daysSinceUpdate > 365) return 'warning';
       return 'ok';
     }
 
-    // ── Render ──
     function renderResults(result) {
-      // Summary
+      const title = document.querySelector('.results-title');
+      if (title) {
+        title.textContent = `Scan Results (${result.language.toUpperCase()} / ${result.ecosystem})`;
+      }
+
       document.getElementById('summary-grid').innerHTML = `
         <div class="s-card c-total"><div class="num">${result.totalPackages}</div><div class="lbl">Total</div></div>
         <div class="s-card c-critical"><div class="num">${result.critical.length}</div><div class="lbl">Critical</div></div>
@@ -966,8 +1499,8 @@
         const statusLabel = dep.status === 'critical' ? 'CRITICAL' : dep.status === 'warning' ? 'WARNING' : 'OK';
 
         const vulns = dep.vulnerabilities.length > 0
-          ? dep.vulnerabilities.map(v => `<span class="vuln-badge v-${v.severity.toLowerCase()}">${v.severity}</span>`).join(' ')
-          : '<span class="v-none">—</span>';
+          ? dep.vulnerabilities.map((v) => `<span class="vuln-badge v-${v.severity.toLowerCase()}">${v.severity}</span>`).join(' ')
+          : '<span class="v-none">â€”</span>';
 
         const updated = dep.daysSinceUpdate > 365
           ? `<span class="c-red">${Math.floor(dep.daysSinceUpdate / 365)}y ago</span>`
@@ -993,18 +1526,38 @@
       }).join('');
     }
 
+    function getFixCommand(dep) {
+      const latest = dep.latestVersion;
+      if (dep.language === 'nodejs') return `npm install ${dep.name}@${latest}`;
+      if (dep.language === 'python') return `pip install ${dep.name}==${latest}`;
+      if (dep.language === 'rust') return `cargo add ${dep.name}@${latest}`;
+      if (dep.language === 'ruby') return `bundle add ${dep.name} --version ${latest}`;
+      if (dep.language === 'php') return `composer require ${dep.name}:${latest}`;
+      if (dep.language === 'go') return `go get ${dep.name}@v${latest}`;
+      if (dep.language === 'java') return `mvn versions:use-dep-version -Dincludes=${dep.name} -DdepVersion=${latest} -DforceVersion=true`;
+      if (dep.language === 'dotnet') return `dotnet add package ${dep.name} --version ${latest}`;
+      if (dep.language === 'dart') return `dart pub add ${dep.name}:^${latest}`;
+      return `${dep.name}@${latest}`;
+    }
+
     function renderFixPanel(deps) {
-      const fixDeps = deps.filter(d => d.isOutdated || d.vulnerabilities.length > 0);
-      if (fixDeps.length === 0) return;
+      const fixDeps = deps.filter((d) => d.isOutdated || d.vulnerabilities.length > 0);
+      const panel = document.getElementById('fix-panel');
+      if (fixDeps.length === 0) {
+        panel.style.display = 'none';
+        return;
+      }
 
-      document.getElementById('fix-commands').innerHTML = fixDeps.map(dep => `
-        <div class="fix-cmd" onclick="copyToClipboard('npm install ${dep.name}@${dep.latestVersion}')">
-          <span>npm install ${dep.name}@${dep.latestVersion}</span>
-          ${dep.vulnerabilities.length > 0 ? '<span class="fix-vuln-warn">⚠ has vulnerabilities</span>' : ''}
-        </div>
-      `).join('');
+      document.getElementById('fix-commands').innerHTML = fixDeps.map((dep) => {
+        const cmd = getFixCommand(dep);
+        return `
+        <div class="fix-cmd" onclick="copyToClipboard('${cmd}')">
+          <span>${cmd}</span>
+          ${dep.vulnerabilities.length > 0 ? '<span class="fix-vuln-warn">âš  has vulnerabilities</span>' : ''}
+        </div>`;
+      }).join('');
 
-      const allCmd = `npm install ${fixDeps.map(d => `${d.name}@${d.latestVersion}`).join(' ')}`;
+      const allCmd = fixDeps.map((d) => getFixCommand(d)).join(' && ');
       document.getElementById('fix-all-section').innerHTML = `
         <div class="fix-all-label">RUN ALL AT ONCE</div>
         <div class="fix-cmd" onclick="copyToClipboard('${allCmd}')">
@@ -1014,23 +1567,20 @@
       `;
     }
 
-    // ── Filter ──
     function filterTable(status, btn) {
-      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.filter-tab').forEach((t) => t.classList.remove('active'));
       btn.classList.add('active');
 
-      document.querySelectorAll('#results-body tr').forEach(row => {
+      document.querySelectorAll('#results-body tr').forEach((row) => {
         row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
       });
     }
 
-    // ── Toggle Fix ──
     function toggleFix() {
       const panel = document.getElementById('fix-panel');
       panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
     }
 
-    // ── Download HTML ──
     function downloadHTML() {
       if (!scanResults) return;
       const html = generateHTMLReport(scanResults);
@@ -1044,28 +1594,27 @@
 
     function generateHTMLReport(result) {
       const allDeps = [...result.critical, ...result.warnings, ...result.ok];
-      const rows = allDeps.map(dep => {
+      const rows = allDeps.map((dep) => {
         const sc = dep.status === 'critical' ? '#ff3b3b' : dep.status === 'warning' ? '#f5c800' : '#00d26a';
         const sl = dep.status === 'critical' ? 'CRITICAL' : dep.status === 'warning' ? 'WARNING' : 'OK';
         const vulns = dep.vulnerabilities.length > 0
-          ? dep.vulnerabilities.map(v => `<span style="font-family:monospace;font-size:0.6rem;padding:0.15rem 0.4rem;border-radius:3px;background:#1a0808;color:#ff6b6b">${v.severity}</span>`).join(' ')
-          : '—';
-        return `<tr><td><b>${dep.name}${dep.isDeprecated ? ' ⚠️' : ''}</b></td><td>${dep.currentVersion}</td><td style="color:${dep.isOutdated?'#f5c800':'#00d26a'}">${dep.latestVersion}</td><td>${dep.daysSinceUpdate}d ago</td><td>${dep.weeklyDownloads > 1e6 ? (dep.weeklyDownloads/1e6).toFixed(1)+'M' : (dep.weeklyDownloads/1000).toFixed(0)+'K'}</td><td>${vulns}</td><td><span style="background:${sc};padding:0.2rem 0.6rem;border-radius:999px;font-size:0.7rem;color:#000;font-weight:700">${sl}</span></td></tr>`;
+          ? dep.vulnerabilities.map((v) => `<span style="font-family:monospace;font-size:0.6rem;padding:0.15rem 0.4rem;border-radius:3px;background:#1a0808;color:#ff6b6b">${v.severity}</span>`).join(' ')
+          : 'â€”';
+        return `<tr><td><b>${dep.name}${dep.isDeprecated ? ' âš ï¸' : ''}</b></td><td>${dep.currentVersion}</td><td style="color:${dep.isOutdated ? '#f5c800' : '#00d26a'}">${dep.latestVersion}</td><td>${dep.daysSinceUpdate}d ago</td><td>${dep.weeklyDownloads > 1e6 ? (dep.weeklyDownloads / 1e6).toFixed(1) + 'M' : (dep.weeklyDownloads / 1000).toFixed(0) + 'K'}</td><td>${vulns}</td><td><span style="background:${sc};padding:0.2rem 0.6rem;border-radius:999px;font-size:0.7rem;color:#000;font-weight:700">${sl}</span></td></tr>`;
       }).join('');
 
-      return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>OpenCheck Report</title><style>body{background:#080808;color:#f5f5f0;font-family:sans-serif;padding:2rem}table{width:100%;border-collapse:collapse}th,td{padding:0.75rem;border-bottom:1px solid #222;text-align:left;font-size:0.85rem}th{color:#555;font-size:0.7rem;text-transform:uppercase}</style></head><body><h2>🔍 OpenCheck Report</h2><p style="color:#888;font-size:0.8rem;margin-bottom:2rem">Generated: ${result.checkedAt.toLocaleString()} · ${result.totalPackages} packages</p><table><thead><tr><th>Package</th><th>Current</th><th>Latest</th><th>Updated</th><th>Downloads</th><th>Vulns</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+      return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>OpenCheck Report</title><style>body{background:#080808;color:#f5f5f0;font-family:sans-serif;padding:2rem}table{width:100%;border-collapse:collapse}th,td{padding:0.75rem;border-bottom:1px solid #222;text-align:left;font-size:0.85rem}th{color:#555;font-size:0.7rem;text-transform:uppercase}</style></head><body><h2>ğŸ” OpenCheck Report</h2><p style="color:#888;font-size:0.8rem;margin-bottom:2rem">Generated: ${result.checkedAt.toLocaleString()} Â· ${result.totalPackages} packages Â· ${result.language.toUpperCase()} / ${result.ecosystem}</p><table><thead><tr><th>Package</th><th>Current</th><th>Latest</th><th>Updated</th><th>Downloads</th><th>Vulns</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
     }
 
-    // ── Reset ──
     function resetScan() {
       document.getElementById('results-section').style.display = 'none';
       document.getElementById('paste-area').value = '';
       document.getElementById('fix-panel').style.display = 'none';
+      manifestSelect.value = 'auto';
       scanResults = null;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // ── Helpers ──
     function setProgress(pct, msg) {
       document.getElementById('progress-bar').style.width = pct + '%';
       document.getElementById('progress-log').textContent = msg;
@@ -1092,3 +1641,4 @@
   </script>
 </body>
 </html>
+

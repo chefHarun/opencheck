@@ -2,7 +2,8 @@ import { Vulnerability } from "./types";
 
 export async function getVulnerabilities(
   name: string,
-  version: string
+  version: string,
+  ecosystem = "npm"
 ): Promise<Vulnerability[]> {
   try {
     const res = await fetch("https://api.osv.dev/v1/query", {
@@ -10,7 +11,7 @@ export async function getVulnerabilities(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         version,
-        package: { name, ecosystem: "npm" },
+        package: { name, ecosystem },
       }),
     });
 

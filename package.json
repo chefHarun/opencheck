@@ -1,6 +1,6 @@
 {
     "name": "opencheck-cli",
-    "description": "Dependency security & health checker for Node.js projects",
+    "description": "Dependency security & health checker for modern multi-language projects",
     "version": "0.1.4",
     "main": "dist/cli.js",
     "bin": {

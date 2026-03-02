@@ -2,6 +2,7 @@ import chalk from "chalk";
 import inquirer from "inquirer";
 import { spawnSync } from "child_process";
 import { resolve } from "path";
+import { version } from "../package.json";
 
 const LOGO = `
   ${chalk.gray("░█████╗░██████╗░███████╗███╗░██╗░█████╗░██╗░░██╗███████╗░█████╗░██╗░░██╗")}
@@ -14,7 +15,7 @@ const LOGO = `
 export async function runInteractive() {
   console.clear();
   console.log(LOGO);
-  console.log("  " + chalk.gray("Created for developers.") + "  " + chalk.cyan("v0.1.3"));
+  console.log("  " + chalk.gray("Created for developers.") + "  " + chalk.cyan(`v${version}`));
   console.log("  " + chalk.gray("──────────────────────────────────────────────────────────────────────────"));
   console.log();
 

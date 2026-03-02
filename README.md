@@ -19,6 +19,18 @@ I love open-source ❤️
 - 🔧 **Fix suggestions** — instant npm update commands
 - ⚙️ **GitHub Actions** — auto-generate workflow file
 
+## Supported Ecosystems
+
+- Node.js (`package.json`)
+- Python (`requirements.txt`)
+- Rust (`Cargo.toml`)
+- Ruby (`Gemfile`)
+- PHP/Composer (`composer.json`)
+- Go (`go.mod`)
+- Java (`pom.xml`, `build.gradle`, `build.gradle.kts`)
+- .NET (`.csproj`, `packages.lock.json`)
+- Dart (`pubspec.yaml`)
+
 ## Install
 
 ```bash
